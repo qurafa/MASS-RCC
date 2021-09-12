@@ -27,3 +27,5 @@
 - You should be able to hear different sounds, including the sound of other boats, the sound of the ocean, above and below sealevel depending on the location of the camera.
 - The proximity alert turns on when the boat is close to an object.
 - When the proximity alert turns on and the boat is on autopilot, then the boat stops(could be changed later)
+
+Feel free to contact me if you have any more questions
