@@ -1,6 +1,6 @@
 # MASS RCC
  
- The only set scene is the RCC test scene , you can run the scene to see the added features.
+ The only set scene is the RCC test scene , you can run the scene to see the different features.
  
  *General Controls*
  - You are able to switch vessels from the BOAT to the AUV by holding the SPACE-BAR key.
