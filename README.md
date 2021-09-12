@@ -28,4 +28,4 @@
 - The proximity alert turns on when the boat is close to an object.
 - When the proximity alert turns on and the boat is on autopilot, then the boat stops(could be changed later)
 
-Feel free to contact me if you have any more questions
+Feel free to contact me if you have any more questions :)
