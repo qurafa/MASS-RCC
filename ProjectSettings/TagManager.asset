@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Fire
+  - rainforest
+  - temperateforest
+  - desert
+  - tundra
+  - taiga
+  - grassland
+  - savanna
+  - freshwater
+  - ice
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Obstacle
+  - Water
+  - UI
+  - Mine
+  - Radar
+  - PostProcessing
+  - Compass
+  - ECDIS
+  - Ocean
+  - ECDISRadar
+  - Volume
+  - ECDISDepth
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - Terrain
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
