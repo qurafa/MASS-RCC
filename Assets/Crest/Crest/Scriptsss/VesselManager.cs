@@ -28,7 +28,9 @@ public class VesselManager : MonoBehaviour
     [SerializeField]
     Text Info;
     [SerializeField]
-    GameObject Radar;
+    GameObject BoatRadar;
+    [SerializeField]
+    GameObject AUVRadar;
     [SerializeField]
     GameObject ProximityAlert;
     [SerializeField]
@@ -46,6 +48,9 @@ public class VesselManager : MonoBehaviour
     public int vesselSet = 1;
     public GameObject vessel;
 
+    private static RaycastHit castHit;
+    public  static int layerMask;//the layer for all the vessles, including boat and AUV controlled by the player
+
     private bool uistuff = true;
     private readonly float EarthRadius = 6371000;//meters
     private float latitude;
@@ -54,8 +59,6 @@ public class VesselManager : MonoBehaviour
     private float t2 = 0;
     private Vector3 North = new Vector3(0, 0, 0);
     private RaycastHit hit;
-    private RaycastHit castHit;
-    private int layerMask;
     private readonly float FLSangle = 360;
     private float CamAngle = 0;
     private float minProx = 12.5f;
@@ -74,16 +77,20 @@ public class VesselManager : MonoBehaviour
         CamSetup(camSet);
         VesselSetUp(vesselSet);
 
+        //Keeping the radar camera and Radar oriented around the Boat alone
         radarCam.transform.position = new Vector3(Boat.position.x, radarCam.transform.position.y, Boat.position.z);
         radarCam.transform.eulerAngles = new Vector3(90, Boat.eulerAngles.y, 0);
-        Radar.transform.position = new Vector3(Boat.position.x, Boat.position.y + 4, Boat.position.z);
+        //BoatRadar.transform.position = new Vector3(Boat.position.x, Boat.position.y + 4, Boat.position.z);
 
+        //Keeping the boat and auv pointers oriented around the boat and auv respectively
         BoatPointer.transform.position = new Vector3(Boat.position.x, 1, Boat.position.z);
         BoatPointer.transform.eulerAngles = new Vector3(0, Boat.eulerAngles.y, 0);
         AUVPointer.transform.position = new Vector3(AUV.position.x, 1, AUV.position.z);
         AUVPointer.transform.eulerAngles = new Vector3(0, AUV.eulerAngles.y, 0);
 
-        ProximityAlert.SetActive(CastRayHorizontal(transform.position, 0, 360, minProx, maxProx));
+        //Turning on proximity alert if there is something close to the boat
+        ProximityAlert.SetActive(CastRayHorizontal(Boat, 0, 360, minProx, maxProx));
+
         time += Time.fixedDeltaTime;
         t2 += Time.fixedDeltaTime;
         if (time > 2)
@@ -120,12 +127,16 @@ public class VesselManager : MonoBehaviour
             playerCam.transform.eulerAngles = new Vector3(vessel.transform.eulerAngles.x, CamAngle + vessel.transform.eulerAngles.y, 0);
         }
 
-        
-        Radar.transform.Rotate(0, 1, 0);
+        //Rotating the AUV and Boat radars
+        BoatRadar.transform.Rotate(0, 1, 0);
+        AUVRadar.transform.Rotate(0, 1, 0);
+        //To keep the rotation on a single axis, the y axis in this case.
+        AUVRadar.transform.eulerAngles = new Vector3(0, AUVRadar.transform.eulerAngles.y, 0);
+        BoatRadar.transform.eulerAngles = new Vector3(0, BoatRadar.transform.eulerAngles.y, 0);
 
-        if (Physics.Raycast(Radar.transform.position, Radar.transform.TransformDirection(Vector3.forward), out hit, 525, layerMask))
+        if (Physics.Raycast(BoatRadar.transform.position, BoatRadar.transform.TransformDirection(Vector3.forward), out hit, 525, layerMask))
         {
-            DrawLine(Radar.transform.position, hit.point, Color.green, 0.5f);
+            DrawLine(BoatRadar.transform.position, hit.point, Color.green, 0.5f);
             UnityEngine.Object.Destroy(UnityEngine.Object.Instantiate(Sprite, hit.point, Sprite.transform.rotation), 2);
             int t = 31;
             if (hit.transform.gameObject.layer != t && t2 > 5)
@@ -251,18 +262,18 @@ public class VesselManager : MonoBehaviour
         GameObject.Destroy(line, duration);
     }
 
-    private bool CastRayHorizontal(Vector3 origin, float minAngle, float maxAngle, float maxX, float maxZ)
+    public static bool CastRayHorizontal(Transform origin, float minAngle, float maxAngle, float maxX, float maxZ)
     {
         bool output = false;
         for (float i = minAngle; i <= maxAngle; i++)
         {
-            float newX = Boat.position.x + (maxX * Mathf.Cos(Mathf.Deg2Rad * i));
-            float newZ = Boat.position.z + (maxZ * Mathf.Sin(Mathf.Deg2Rad * i));
-            Vector3 p = new Vector3(newX, Boat.position.y, newZ);
-            float dist = Vector3.Distance(p, origin);
-            Vector3 newDir = Boat.TransformDirection(p - origin);
-            Debug.DrawRay(origin, newDir, Color.red, 0.05f, false);
-            if (Physics.Raycast(origin, newDir, out castHit, dist, layerMask))
+            float newX = origin.position.x + (maxX * Mathf.Cos(Mathf.Deg2Rad * i));
+            float newZ = origin.position.z + (maxZ * Mathf.Sin(Mathf.Deg2Rad * i));
+            Vector3 p = new Vector3(newX, origin.position.y, newZ);
+            float dist = Vector3.Distance(p, origin.position);
+            Vector3 newDir = origin.TransformDirection(p - origin.position);
+            //Debug.DrawRay(origin, newDir, Color.red, 0.05f, false);
+            if (Physics.Raycast(origin.position, newDir, out castHit, dist, layerMask))
             {
                 return true;
             }

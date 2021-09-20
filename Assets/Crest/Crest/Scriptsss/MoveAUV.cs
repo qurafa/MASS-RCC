@@ -7,14 +7,20 @@ public class MoveAUV : MonoBehaviour
 {
     [SerializeField]
     GameObject Boat;
+    [SerializeField]
+    GameObject Radar;
 
     public bool playerControlled;
 
     private Rigidbody rb;
+    private RaycastHit hit;
     private float vesselSet;
     private bool stopRotate;
-    private bool stopTranslate;
+    private bool stopTranslateH;
+    private float ColRange = 100;
+    int layerMask;
     float speed = 0;
+    float dir = 0;
     float hDir = 0;//horizontal Direction
     float vDir = 0;//vertical Direction
 
@@ -22,6 +28,8 @@ public class MoveAUV : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        layerMask = 1 << 8;
+        layerMask = ~layerMask;
     }
 
     // Update is called once per frame
@@ -38,6 +46,7 @@ public class MoveAUV : MonoBehaviour
         else
         {
             playerControlled = false;
+            Col();
             TranslateH();
             Rotate();
             Stabilize();
@@ -71,13 +80,75 @@ public class MoveAUV : MonoBehaviour
     {
         float distance = Vector3.Distance(transform.position, Boat.transform.position);
 
-        gameObject.GetComponent<BoatAlignNormal>()._throttleBias = ((distance > 50) ? 1 : 0);
+        gameObject.GetComponent<BoatAlignNormal>()._throttleBias = ((distance > 50 && !stopTranslateH) ? 1.5f : speed);
     }
 
     private void Rotate()
     {
-        gameObject.GetComponent<BoatAlignNormal>()._steerBias = ((Angle() < -0.1 || Angle() > 0.1) ? Dir() : 0);
+        gameObject.GetComponent<BoatAlignNormal>()._steerBias = (((Angle() < -0.1 || Angle() > 0.1) && !stopRotate) ? Dir() : dir);
     }
+
+    //For avoiding collision with different objects
+    private void Col()
+    {
+        Debug.DrawRay(Radar.transform.position, Radar.transform.TransformDirection(Vector3.forward) * ColRange, Color.red, 0.1f);
+        if (Physics.Raycast(Radar.transform.position, Radar.transform.TransformDirection(Vector3.forward), out hit, ColRange, layerMask))
+        {
+            Vector3 currentDir = transform.forward;
+            Vector3 contactDir = hit.point - transform.position;
+            float a = Vector3.Angle(currentDir, contactDir);
+            Debug.Log("A: " + a + " Object: " + hit.collider.gameObject.name);
+            //float dir = (((ColRange - hit.distance) * (90 - a)) / (ColRange * 90)) / ((90 - a) / 90);
+            //float dir = (ColRange - hit.distance) / ColRange;
+
+            //This is so it turns less the less the object is in from of it
+            float newMax = ((90 - a) / 90) * 1.5f;
+
+            if (a < 7.5)
+            {
+                //prevent the boat from moving normal speeds if there is possibility of collision
+                stopTranslateH = stopTranslateH || true;
+
+                //Manage speed based on how far an object is to boat
+                speed = (hit.distance / ColRange) * 1.5f;
+            }
+            else
+            {
+                stopTranslateH = stopTranslateH || false;
+            }
+
+            //If there is something we may need to worry about 90 deg to our left or right
+            if (a < 90)
+            {
+                //stop normal rotation to face destination because of the possibility of collision
+                stopRotate = stopRotate || true;
+
+                //set how much we need to turn using the newMax based on how close th eobject is
+                dir = ((ColRange - hit.distance) * newMax) / ((ColRange * 2) + hit.distance);
+
+                //Set whether we need to turn left or right
+                dir *= ((Vector3.Cross(currentDir, contactDir).y < transform.position.y) ? 1 : -1);
+            }
+            else
+            {
+                stopRotate = stopRotate || false;
+            }
+        }
+
+        //If there is nothing to worry about 90 deg to our left or right then continue with normal rotation to face destination
+        if ((!VesselManager.CastRayHorizontal(transform, 0, 90, ColRange / 2, ColRange / 2) && Dir() == 1) || (!VesselManager.CastRayHorizontal(transform, 90, 180, ColRange / 2, ColRange / 2) && Dir() == -1))
+        {
+            stopRotate = false;
+        }
+
+        //If there is nothing in front of us, then continue with moving at normal speeds
+        if (!VesselManager.CastRayHorizontal(transform, 82.5f, 97.5f, ColRange, ColRange))
+        {
+            stopTranslateH = false;
+        }
+
+    }
+    
 
     private float Angle()
     {

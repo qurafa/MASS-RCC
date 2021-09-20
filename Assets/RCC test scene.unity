@@ -2059,6 +2059,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Boat: {fileID: 1290204345}
+  Radar: {fileID: 219788472}
   playerControlled: 0
 --- !u!43 &177589804
 Mesh:
@@ -3027,6 +3028,36 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 211902648}
   m_CullTransparentMesh: 1
+--- !u!1 &219788472
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 219788473}
+  m_Layer: 8
+  m_Name: Radar
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &219788473
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 219788472}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.047, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 175016073}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &221338520
 GameObject:
   m_ObjectHideFlags: 0
@@ -3185,6 +3216,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Boat: {fileID: 236534527}
+  AUV: {fileID: 0}
   ECDIScam: {fileID: 1683710953}
   FLS: {fileID: 0}
   symbols:
@@ -3244,7 +3276,8 @@ MonoBehaviour:
   ECDISCam: {fileID: 0}
   PlayerCanvas: {fileID: 0}
   Info: {fileID: 0}
-  Radar: {fileID: 0}
+  BoatRadar: {fileID: 0}
+  AUVRadar: {fileID: 0}
   ProximityAlert: {fileID: 0}
   DestLat: {fileID: 0}
   DestLong: {fileID: 0}
@@ -3658,7 +3691,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23088
+  m_Name: pb_Mesh23094
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -3822,7 +3855,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23044
+  m_Name: pb_Mesh23048
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -5090,7 +5123,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh24010
+  m_Name: pb_Mesh24014
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -5693,7 +5726,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23066
+  m_Name: pb_Mesh23070
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -5902,7 +5935,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23258
+  m_Name: pb_Mesh23262
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -6121,6 +6154,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Boat: {fileID: 520832372}
+  AUV: {fileID: 0}
   ECDIScam: {fileID: 1683710953}
   FLS: {fileID: 0}
   symbols:
@@ -6180,7 +6214,8 @@ MonoBehaviour:
   ECDISCam: {fileID: 0}
   PlayerCanvas: {fileID: 0}
   Info: {fileID: 0}
-  Radar: {fileID: 0}
+  BoatRadar: {fileID: 0}
+  AUVRadar: {fileID: 0}
   ProximityAlert: {fileID: 0}
   DestLat: {fileID: 0}
   DestLong: {fileID: 0}
@@ -6835,7 +6870,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23918
+  m_Name: pb_Mesh23920
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -7094,7 +7129,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23384
+  m_Name: pb_Mesh23388
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -8883,6 +8918,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Boat: {fileID: 726008941}
+  AUV: {fileID: 0}
   ECDIScam: {fileID: 1683710953}
   FLS: {fileID: 0}
   symbols:
@@ -8942,7 +8978,8 @@ MonoBehaviour:
   ECDISCam: {fileID: 0}
   PlayerCanvas: {fileID: 0}
   Info: {fileID: 0}
-  Radar: {fileID: 0}
+  BoatRadar: {fileID: 0}
+  AUVRadar: {fileID: 0}
   ProximityAlert: {fileID: 0}
   DestLat: {fileID: 0}
   DestLong: {fileID: 0}
@@ -12941,7 +12978,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23666
+  m_Name: pb_Mesh23668
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -14956,7 +14993,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23608
+  m_Name: pb_Mesh23610
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -15516,7 +15553,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23324
+  m_Name: pb_Mesh23328
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -16160,7 +16197,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh22320
+  m_Name: pb_Mesh22318
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -16324,7 +16361,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23974
+  m_Name: pb_Mesh23978
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -17635,7 +17672,8 @@ MonoBehaviour:
   ECDISCam: {fileID: 1683710953}
   PlayerCanvas: {fileID: 686811739}
   Info: {fileID: 731789869}
-  Radar: {fileID: 330481772}
+  BoatRadar: {fileID: 330481772}
+  AUVRadar: {fileID: 219788472}
   ProximityAlert: {fileID: 1984640248}
   DestLat: {fileID: 1914581700}
   DestLong: {fileID: 32274233}
@@ -17678,6 +17716,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Boat: {fileID: 1290204346}
+  AUV: {fileID: 175016073}
   ECDIScam: {fileID: 1683710953}
   FLS: {fileID: 872922572}
   symbols:
@@ -18522,6 +18561,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Boat: {fileID: 1332239518}
+  AUV: {fileID: 0}
   ECDIScam: {fileID: 1683710953}
   FLS: {fileID: 0}
   symbols:
@@ -18581,7 +18621,8 @@ MonoBehaviour:
   ECDISCam: {fileID: 0}
   PlayerCanvas: {fileID: 0}
   Info: {fileID: 0}
-  Radar: {fileID: 0}
+  BoatRadar: {fileID: 0}
+  AUVRadar: {fileID: 0}
   ProximityAlert: {fileID: 0}
   DestLat: {fileID: 0}
   DestLong: {fileID: 0}
@@ -20639,6 +20680,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Boat: {fileID: 1518595803}
+  AUV: {fileID: 0}
   ECDIScam: {fileID: 1683710953}
   FLS: {fileID: 0}
   symbols:
@@ -20698,7 +20740,8 @@ MonoBehaviour:
   ECDISCam: {fileID: 0}
   PlayerCanvas: {fileID: 0}
   Info: {fileID: 0}
-  Radar: {fileID: 0}
+  BoatRadar: {fileID: 0}
+  AUVRadar: {fileID: 0}
   ProximityAlert: {fileID: 0}
   DestLat: {fileID: 0}
   DestLong: {fileID: 0}
@@ -21147,6 +21190,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Boat: {fileID: 1551221341}
+  AUV: {fileID: 0}
   ECDIScam: {fileID: 1683710953}
   FLS: {fileID: 0}
   symbols:
@@ -21206,7 +21250,8 @@ MonoBehaviour:
   ECDISCam: {fileID: 0}
   PlayerCanvas: {fileID: 0}
   Info: {fileID: 0}
-  Radar: {fileID: 0}
+  BoatRadar: {fileID: 0}
+  AUVRadar: {fileID: 0}
   ProximityAlert: {fileID: 0}
   DestLat: {fileID: 0}
   DestLong: {fileID: 0}
@@ -22670,6 +22715,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Boat: {fileID: 1646037008}
+  AUV: {fileID: 0}
   ECDIScam: {fileID: 1683710953}
   FLS: {fileID: 0}
   symbols:
@@ -22729,7 +22775,8 @@ MonoBehaviour:
   ECDISCam: {fileID: 0}
   PlayerCanvas: {fileID: 0}
   Info: {fileID: 0}
-  Radar: {fileID: 0}
+  BoatRadar: {fileID: 0}
+  AUVRadar: {fileID: 0}
   ProximityAlert: {fileID: 0}
   DestLat: {fileID: 0}
   DestLong: {fileID: 0}
@@ -23986,7 +24033,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23272
+  m_Name: pb_Mesh23276
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -24269,7 +24316,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23414
+  m_Name: pb_Mesh23418
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -24822,6 +24869,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Boat: {fileID: 1850433389}
+  AUV: {fileID: 0}
   ECDIScam: {fileID: 1683710953}
   FLS: {fileID: 0}
   symbols:
@@ -24881,7 +24929,8 @@ MonoBehaviour:
   ECDISCam: {fileID: 0}
   PlayerCanvas: {fileID: 0}
   Info: {fileID: 0}
-  Radar: {fileID: 0}
+  BoatRadar: {fileID: 0}
+  AUVRadar: {fileID: 0}
   ProximityAlert: {fileID: 0}
   DestLat: {fileID: 0}
   DestLong: {fileID: 0}
@@ -26569,7 +26618,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23954
+  m_Name: pb_Mesh23956
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -27637,7 +27686,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23902
+  m_Name: pb_Mesh23904
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2
@@ -28347,6 +28396,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Boat: {fileID: 2122445386}
+  AUV: {fileID: 0}
   ECDIScam: {fileID: 1683710953}
   FLS: {fileID: 0}
   symbols:
@@ -28406,7 +28456,8 @@ MonoBehaviour:
   ECDISCam: {fileID: 0}
   PlayerCanvas: {fileID: 0}
   Info: {fileID: 0}
-  Radar: {fileID: 0}
+  BoatRadar: {fileID: 0}
+  AUVRadar: {fileID: 0}
   ProximityAlert: {fileID: 0}
   DestLat: {fileID: 0}
   DestLong: {fileID: 0}
@@ -28972,7 +29023,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh23624
+  m_Name: pb_Mesh23626
   serializedVersion: 10
   m_SubMeshes:
   - serializedVersion: 2

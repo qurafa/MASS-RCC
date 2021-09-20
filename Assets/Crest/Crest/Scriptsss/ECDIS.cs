@@ -9,6 +9,8 @@ public class ECDIS : MonoBehaviour
     [SerializeField]
     Transform Boat;
     [SerializeField]
+    Transform AUV;
+    [SerializeField]
     GameObject ECDIScam;
     [SerializeField]
     GameObject FLS;
@@ -63,7 +65,7 @@ public class ECDIS : MonoBehaviour
             {
                 float newY = (FLS.transform.TransformDirection(Vector3.forward).y * Mathf.Cos(i)) + ((FLS.transform.TransformDirection(Vector3.forward).z) * Mathf.Sin(i));
                 float newZ = (-1 * FLS.transform.TransformDirection(Vector3.forward).y * Mathf.Sin(i)) + ((FLS.transform.TransformDirection(Vector3.forward).z) * Mathf.Cos(i));
-                Debug.DrawRay(FLS.transform.position, new Vector3(FLS.transform.TransformDirection(Vector3.forward).x, newY, newZ) * 272.5f, Color.red, 1);
+                //Debug.DrawRay(FLS.transform.position, new Vector3(FLS.transform.TransformDirection(Vector3.forward).x, newY, newZ) * 272.5f, Color.red, 1);
                 if (newY < 0 && Physics.Raycast(FLS.transform.position, new Vector3(FLS.transform.TransformDirection(Vector3.forward).x, newY, newZ), out hit, 272.5f, layerMask))
                 {
                     GameObject d = new GameObject();
@@ -153,10 +155,12 @@ public class ECDIS : MonoBehaviour
             ECDIScam.transform.position = new Vector3(Boat.position.x, 82, Boat.position.z);
             ECDIScam.transform.eulerAngles = new Vector3(90, Boat.eulerAngles.y, 0);
             Boat.GetComponent<BoatAlignNormal>()._playerControlled = Boat.GetComponent<MoveBoat>().playerControlled;
+            AUV.GetComponent<BoatAlignNormal>()._playerControlled = AUV.GetComponent<MoveAUV>().playerControlled;
         }
         else
         {
             Boat.GetComponent<BoatAlignNormal>()._playerControlled = false;
+            AUV.GetComponent<BoatAlignNormal>()._playerControlled = false;
         }
     }
 

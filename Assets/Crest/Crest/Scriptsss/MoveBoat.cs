@@ -72,6 +72,7 @@ public class MoveBoat : MonoBehaviour
         gameObject.GetComponent<BoatAlignNormal>()._playerControlled = playerControlled;
     }
 
+    //Moving the ship
     private void Translate()
     {
         float distance = Vector3.Distance(transform.position, GetDestCoord());
@@ -90,6 +91,7 @@ public class MoveBoat : MonoBehaviour
 
     }
 
+    //Rotating the ship towards the desired destination
     private void Rotate()
     {
         if ((Angle() < -0.1 || Angle() > 0.1) && !stopRotate)
@@ -106,6 +108,7 @@ public class MoveBoat : MonoBehaviour
         }
     }
 
+    //Getting the angle between the entered destination and current position
     private float Angle()
     {
         Vector3 currentDir = transform.forward;
@@ -119,6 +122,7 @@ public class MoveBoat : MonoBehaviour
         return angle;
     }
 
+    //Setting the direction of the entered destination, only called when the destination is entered
     private int Dir()
     {
         Vector3 currentDir = transform.forward;
@@ -131,6 +135,7 @@ public class MoveBoat : MonoBehaviour
         return dir;
     }
 
+    //Checking if we need to stop
     private bool StopCheck()
     {
         if (!auto)
@@ -143,6 +148,7 @@ public class MoveBoat : MonoBehaviour
         return false;
     }
 
+    //To stop the boat
     private void Stop()
     {
         playerControlled = gameObject.GetComponent<VesselManager>().BoatPlayerControlled;
@@ -155,39 +161,47 @@ public class MoveBoat : MonoBehaviour
         //Debug.Log("Stop");
     }
 
+    //For avoiding collision with different objects
     private void Col()
     {
         if (Physics.Raycast(Radar.transform.position, Radar.transform.TransformDirection(Vector3.forward), out hit, ColRange, layerMask))
         {
-            //Debug.DrawRay(Radar.transform.position, Radar.transform.TransformDirection(Vector3.forward)*ColRange, Color.green, 0.1f);
             Vector3 currentDir = transform.forward;
             Vector3 contactDir = hit.point - transform.position;
 
             float a = Vector3.Angle(currentDir, contactDir);
-
+            //Debug.Log("A: " + a);
+            //Debug.DrawRay(Radar.transform.position, Radar.transform.TransformDirection(Vector3.forward) * ColRange, Color.red, 0.1f);
             //float dir = (((ColRange - hit.distance) * (90 - a)) / (ColRange * 90)) / ((90 - a) / 90);
             //float dir = (ColRange - hit.distance) / ColRange;
-            float newMax = ((90 - a) / 90) * 1.75f;
 
-            if(Math.Abs(a) < 7.5)
+            //This is so it turns less the less the object is in from of it
+            float newMax = ((90 - a) / 90) * 1.5f;
+
+            if(a < 7.5)
             {
+                //prevent the boat from moving normal speeds if there is possibility of collision
                 stopTranslate = stopTranslate || true;
-                speed = (hit.distance / ColRange) * 1.75f;
+
+                //Manage speed based on how far an object is to boat
+                speed = (hit.distance / ColRange) * 1.5f;
             }
             else
             {
                 stopTranslate = stopTranslate || false;
             }
 
-            if (Math.Abs(a) < 90)
+            //If there is something we may need to worry about 90 deg to our left or right
+            if (a < 90)
             {
+                //stop normal rotation to face destination because of the possibility of collision
                 stopRotate = stopRotate || true;
+
+                //set how much we need to turn using the newMax based on how close th eobject is
                 dir = ((ColRange - hit.distance) * newMax) / ((ColRange * 2) + hit.distance);
 
-                if (Vector3.Cross(currentDir, contactDir).y < transform.position.y)
-                    dir *= 1;
-                else
-                    dir *= -1;
+                //Set whether we need to turn left or right
+                dir *= ((Vector3.Cross(currentDir, contactDir).y < transform.position.y) ? 1 : -1);
             }
             else
             {
@@ -195,18 +209,21 @@ public class MoveBoat : MonoBehaviour
             }
         }
 
-        if ((!CastRayHorizontal(transform.position, 0, 90, ColRange/2, ColRange/2) && Dir() == 1) || (!CastRayHorizontal(transform.position, 90, 180, ColRange/2, ColRange/2) && Dir() == -1))
+        //If there is nothing to worry about 90 deg to our left when we want to turn left or right when we want to turn right then continue with normal rotation to face destination
+        if ((!VesselManager.CastRayHorizontal(transform, 0, 90, ColRange/2, ColRange/2) && Dir() == 1) || (!VesselManager.CastRayHorizontal(transform, 90, 180, ColRange/2, ColRange/2) && Dir() == -1))
         {
             stopRotate = false;
         }
 
-        if(!CastRayHorizontal(transform.position, 82.5f, 97.5f, ColRange, ColRange))
+        //If there is nothing in front of us, then continue with moving at normal speeds
+        if(!VesselManager.CastRayHorizontal(transform, 82.5f, 97.5f, ColRange, ColRange))
         {
             stopTranslate = false;
         }
 
     }
 
+    //Adding a beacon to the set destination
     private void SetDestBeacon()
     {
         if(DestinationEntered())
@@ -221,7 +238,7 @@ public class MoveBoat : MonoBehaviour
         }
     }
 
-    private bool CastRayHorizontal(Vector3 origin, float minAngle, float maxAngle, float maxX, float maxZ)
+    /*private bool CastRayHorizontal(Vector3 origin, float minAngle, float maxAngle, float maxX, float maxZ)
     {
         bool output = false;
         for (float i = minAngle; i <= maxAngle; i++)
@@ -233,12 +250,12 @@ public class MoveBoat : MonoBehaviour
             Vector3 newDir = transform.TransformDirection(p - origin);
             if (Physics.Raycast(origin, newDir, out castHit, dist, layerMask))
             {
-                Debug.DrawRay(origin, newDir, Color.blue, 0.05f, false);
+                //Debug.DrawRay(origin, newDir, Color.blue, 0.05f, false);
                 return true;
             }
         }
         return output;
-    }
+    }*/
 
     private void DrawLine(Vector3 start, Vector3 end, Color color, float duration = 0.1f)
     {
@@ -257,11 +274,13 @@ public class MoveBoat : MonoBehaviour
         GameObject.Destroy(line, duration);
     }
 
+    //Checking if a destination has been entered
     private bool DestinationEntered()
    {
         return GetDestCoord() != transform.position;
     }
 
+    //Getting the entered destination
     private Vector3 GetDestCoord()
     {
         float x;
