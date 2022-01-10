@@ -46,7 +46,7 @@ namespace Crest
         ComputeBuffer _computeBufQueries;
         ComputeBuffer _computeBufResults;
 
-        public const int MAX_QUERY_COUNT_DEFAULT = 4096;
+        public const int MAX_QUERY_COUNT_DEFAULT = 4096*4;
 
         int _maxQueryCount = MAX_QUERY_COUNT_DEFAULT;
         Vector3[] _queryPosXZ_minGridSize = new Vector3[MAX_QUERY_COUNT_DEFAULT];

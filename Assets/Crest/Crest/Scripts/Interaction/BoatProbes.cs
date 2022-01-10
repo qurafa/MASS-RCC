@@ -11,6 +11,7 @@ using UnityEngine.InputSystem;
 #endif
 using UnityEngine.Serialization;
 
+
 namespace Crest
 {
     /// <summary>
@@ -32,12 +33,12 @@ namespace Crest
         [Tooltip("Override RB center of mass, in local space."), SerializeField]
         Vector3 _centerOfMass = Vector3.zero;
         [SerializeField, FormerlySerializedAs("ForcePoints")]
-        FloaterForcePoints[] _forcePoints = new FloaterForcePoints[] { };
+        public FloaterForcePoints[] _forcePoints;
         [Tooltip("Vertical offset for where engine force should be applied.")]
         public float _forceHeightOffset = 0f;
         public float _forceMultiplier = 10f;
         [Tooltip("Width dimension of boat. The larger this value, the more filtered/smooth the wave response will be.")]
-        public float _minSpatialLength = 12f;
+        public float _minSpatialLength = 12;
         [Range(0, 1)]
         public float _turningHeel = 0.35f;
 
