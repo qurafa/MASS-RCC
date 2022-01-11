@@ -90,7 +90,7 @@ public class MoveBoat : MonoBehaviour
 
             //updating whether we should start moving or not
             if (!sM)
-                sM = startMoving();
+                sM = StartMoving();
 
             playerControlled = false;
             //Rotate(); //Rotating to face our direction first
@@ -188,7 +188,7 @@ public class MoveBoat : MonoBehaviour
         float dot = Vector3.Dot(currentDir, desiredDir);
         float magProd = currentDir.magnitude * desiredDir.magnitude;
 
-        float angle = (Mathf.Acos(dot / magProd)) * Mathf.Rad2Deg;
+        float angle = Mathf.Acos(dot / magProd) * Mathf.Rad2Deg;
 
         return angle;
     }
@@ -210,12 +210,11 @@ public class MoveBoat : MonoBehaviour
     //Checking if we need to stop
     private bool StopCheck()
     {
-        if (!auto)
-            return true;
-        if ((Angle(transform, GetDestCoord()) < 0.1) && Vector3.Distance(transform.position, GetDestCoord()) <= 100)
-            return true;
-        if (ProximityAlert.activeInHierarchy)
-            return true;
+        if (!auto) return true;
+
+        if ((Angle(transform, GetDestCoord()) < 0.1) && Vector3.Distance(transform.position, GetDestCoord()) <= 100) return true;
+
+        if (ProximityAlert.activeInHierarchy) return true;
 
         return false;
     }
@@ -257,26 +256,25 @@ public class MoveBoat : MonoBehaviour
 
             //This is so it turns less the less the object is in from of it
             float newMax = ((90 - a) / 90) * 1.5f;
-            float dirOffSet = (180 - (Vector3.Angle(currentDir, nextPos - transform.position)) / 180);
 
             if (a < 7.5)
             {
                 //prevent the boat from moving normal speeds if there is possibility of collision
-                stopTranslate = stopTranslate || true;
+                stopTranslate = true;
 
                 //Manage speed based on how far an object is to boat
                 speed = (hit.distance / ColRange) * 1.5f;
             }
             else
             {
-                stopTranslate = stopTranslate || false;
+                stopTranslate = false;
             }
             //Debug.Log(Vector3.Angle(currentDir, nextPos - transform.position));
             //If there is something we may need to worry about 90 deg to our left or right
             if (a < 90)
             {
                 //stop normal rotation to face destination because of the possibility of collision
-                stopRotate = stopRotate || true;
+                stopRotate = true;
 
                 //set how much we need to turn using the newMax based on how close the object is
                 dir = (((ColRange - hit.distance) * newMax) / ((ColRange * 2) + hit.distance));
@@ -286,7 +284,7 @@ public class MoveBoat : MonoBehaviour
             }
             else
             {
-                stopRotate = stopRotate || false;
+                stopRotate = false;
             }
         }
 
@@ -340,7 +338,7 @@ public class MoveBoat : MonoBehaviour
 
     private void DrawLine(List<KeyValuePair<Vector3, bool>> points, Color color, float duration = 0.02f)
     {
-        Debug.Log("pointsCount: " + points.Count);
+        //Debug.Log("pointsCount: " + points.Count);
         int[] index = new int[2] { 0, points.Count - 3};
         for (int i = 0; i < 2; i++)
         {
@@ -432,7 +430,7 @@ public class MoveBoat : MonoBehaviour
         return false;
     }
 
-    private bool startMoving()
+    private bool StartMoving()
     {
         //Facing nextPoint
 

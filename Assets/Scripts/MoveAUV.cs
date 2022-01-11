@@ -75,7 +75,7 @@ public class MoveAUV : MonoBehaviour
             auto = !auto;
 
         //If a destination is entered, then start adding points as you move towards that destination, else keep facing the boat
-        if (destinationEntered && Boat.GetComponent<MoveBoat>().auto)
+        if (destinationEntered && auto)
         {
             newDest = Boat.GetComponent<MoveBoat>().GetDestCoord();
 
@@ -160,7 +160,7 @@ public class MoveAUV : MonoBehaviour
             Vector3 currentDir = transform.forward;
             Vector3 contactDir = hit.point - transform.position;
             float a = Vector3.Angle(currentDir, contactDir);
-            //Debug.Log("A: " + a + " Object: " + hit.collider.gameObject.name);
+
             //float dir = (((ColRange - hit.distance) * (90 - a)) / (ColRange * 90)) / ((90 - a) / 90);
             //float dir = (ColRange - hit.distance) / ColRange;
 
@@ -170,21 +170,21 @@ public class MoveAUV : MonoBehaviour
             if (a < 7.5)
             {
                 //prevent the boat from moving normal speeds if there is possibility of collision
-                stopTranslateH = stopTranslateH || true;
+                stopTranslateH = true;
 
                 //Manage speed based on how far an object is to boat
                 speed = (hit.distance / ColRange) * 1.5f;
             }
             else
             {
-                stopTranslateH = stopTranslateH || false;
+                stopTranslateH = false;
             }
 
             //If there is something we may need to worry about 90 deg to our left or right
             if (a < 90)
             {
                 //stop normal rotation to face destination because of the possibility of collision
-                stopRotate = stopRotate || true;
+                stopRotate = true;
 
                 //set how much we need to turn using the newMax based on how close th eobject is
                 dir = ((ColRange - hit.distance) * newMax) / ((ColRange * 2) + hit.distance);
@@ -194,11 +194,12 @@ public class MoveAUV : MonoBehaviour
             }
             else
             {
-                stopRotate = stopRotate || false;
+                stopRotate = false;
             }
+
             justCollided = true;
         }
-        //Debug.Log("JustCollided1: " + justCollided);
+
         //If there is nothing to worry about 90 deg to our left or right then continue with normal rotation to face destination
         if (((!VesselManager.CastRayHorizontal(transform, 0, 90, ColRange / 2, ColRange / 2) && !VesselManager.CastRayHorizontal(transform, 180, 270, ColRange / 2, ColRange / 2)) && Dir() == 1) || ((!VesselManager.CastRayHorizontal(transform, 90, 180, ColRange / 2, ColRange / 2) && !VesselManager.CastRayHorizontal(transform, 270, 360, ColRange / 2, ColRange / 2)) && Dir() == -1))
         {
@@ -260,7 +261,7 @@ public class MoveAUV : MonoBehaviour
         float dot = Vector3.Dot(currentDir, desiredDir);
         float magProd = currentDir.magnitude * desiredDir.magnitude;
 
-        float angle = Mathf.Acos(dot / magProd);
+        float angle = Mathf.Rad2Deg * Mathf.Acos(dot / magProd);
 
         return angle;
     }
@@ -284,7 +285,7 @@ public class MoveAUV : MonoBehaviour
         points.Add(new KeyValuePair<Vector3, bool>(p, false));
         points.Add(temp1);
         points.Add(temp2);
-        Debug.Log(points.Count);
+        //Debug.Log(points.Count);
     }
 
     public void ResetPoints()
