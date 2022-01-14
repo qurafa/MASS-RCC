@@ -14,6 +14,8 @@ public class VesselManager : MonoBehaviour
     [SerializeField]
     Transform AUV;
     [SerializeField]
+    Transform Drone;
+    [SerializeField]
     GameObject BoatPointer;
     [SerializeField]
     GameObject AUVPointer;
@@ -50,27 +52,35 @@ public class VesselManager : MonoBehaviour
 
     public bool BoatPlayerControlled = true;
     public bool AUVPlayerControlled = true;
+    public bool DronePlayerControlled = true;
     public int camSet = 1;
     public int vesselSet = 1;
     public GameObject vessel;
-    public bool uistuff = true;
+    public bool ui = true;
 
-    private static RaycastHit castHit;
+    private int _camSetTemp = 0;
+    private int _vesselSetTemp = 0;
+    private bool _uiTemp = false;
+
     public  static int layerMask;//the layer for all the vessles, including boat and AUV controlled by the player
 
-    private bool rCam = false; //Resetting cam rotation
-    private readonly float EarthRadius = 6371000;//meters
-    private float latitude;
-    private float longitude;
-    private float time = 0;
-    private float t2 = 0;
-    private Vector3 North = new Vector3(0, 0, 0);
-    private RaycastHit hit;
-    private readonly float FLSangle = 360;
-    private float CamAngle = 0;
-    private float minProx = 12.5f;
-    private float maxProx = 25;
-    private float ColRange = 525;
+    private static RaycastHit _castHit;
+    private bool _rCam = false; //Resetting cam rotation
+    private readonly float _EarthRadius = 6371000;//meters
+    private float _latitude;
+    private float _longitude;
+    private float _timer1 = 0;
+    private float _timer2 = 0;
+    private Vector3 _North = new Vector3(0, 0, 0);
+    private RaycastHit _hit;
+    private readonly float _FLSangle = 360;
+    private float _camAngle = 0;
+    private float _minProx = 12.5f;
+    private float _maxProx = 25;
+    private float _ColRange = 525;
+    private GameObject _BoatCam;
+    private GameObject _AUVCam;
+    private GameObject _DroneCam;
 
     // Start is called before the first frame update
     void Start()
@@ -78,12 +88,20 @@ public class VesselManager : MonoBehaviour
         Sprite.GetComponent<Renderer>().material.SetColor("_SpriteColor", Color.green);
         layerMask = 1 << 8;
         layerMask = ~layerMask;
+
+        //Setting the initial vessel to be the Boat
+        vessel = Boat.gameObject;
+
+        //Assigning the cameras
+        _BoatCam = playerCam.transform.GetChild(0).gameObject;
+        _AUVCam = playerCam.transform.GetChild(1).gameObject;
+        _DroneCam = playerCam.transform.GetChild(2).gameObject;
     }
 
     void FixedUpdate()
     {
-        CamSetup(camSet);
-        VesselSetUp(vesselSet);
+        CamSetup();
+        VesselSetUp();
 
         //Keeping the radar camera and Radar oriented around the Boat alone
         radarCam.transform.position = new Vector3(Boat.position.x, radarCam.transform.position.y, Boat.position.z);
@@ -97,140 +115,188 @@ public class VesselManager : MonoBehaviour
         AUVPointer.transform.eulerAngles = new Vector3(0, AUV.eulerAngles.y, 0);
 
         //Turning on proximity alert if there is something close to the boat
-        ProximityAlert.SetActive(CastRayHorizontal(Boat, 0, 360, minProx, maxProx));
+        ProximityAlert.SetActive(CastRayHorizontal(Boat, 0, 360, _minProx, _maxProx));
 
-        time += Time.fixedDeltaTime;
-        t2 += Time.fixedDeltaTime;
-        if (time > 2)
+        _timer1 += Time.fixedDeltaTime;
+        _timer2 += Time.fixedDeltaTime;
+        if (_timer1 > 2)
         {
             SetHorizon();
             Info.text = string.Concat(GetLat(), " ", GetLong(), " \n", "Depth: ", decimal.Round(System.Convert.ToDecimal(Boat.position.y), 2), "\n", "Speed: ", decimal.Round(System.Convert.ToDecimal(GetComponent<Rigidbody>().velocity.magnitude), 1));
             DistanceFromDest.text = string.Concat("Distance From Destination:", "\n", decimal.Round(System.Convert.ToDecimal(Vector3.Distance(Boat.position, GetDestCoord())), 2)/1000, " km");
 
-            if(Keyboard.current.rKey.isPressed) rCam = !rCam;
+            if(Keyboard.current.rKey.isPressed) _rCam = !_rCam;
 
-            if (Keyboard.current.uKey.isPressed) uistuff = !uistuff;
+            if (Keyboard.current.uKey.isPressed) ui = (vesselSet != 3) ? !ui : false;
 
             if (Keyboard.current.spaceKey.isPressed)
             {
-                if (vesselSet == 1) vesselSet = 2;
-                else if (vesselSet == 2) vesselSet = 1;
+                if (vesselSet == 3) vesselSet = 1;
+                else vesselSet++;
             }
 
-            time = 0;
+            _timer1 = 0;
         }
         
         //Resetting the camera view to be the front of the boat or rotating the camera based on the horizontal mouse movement or the r-key 
-        if (rCam || camSet != 1)
+        if (_vesselSetTemp != vesselSet || _rCam || camSet != 1)
         {
-            CamAngle = 0;
+            _camAngle = 0;
             playerCam.transform.eulerAngles = new Vector3(vessel.transform.eulerAngles.x, vessel.transform.eulerAngles.y, 0);
         }
         else
         {
-            CamAngle += Mathf.Round(Input.GetAxis("Mouse X"));
-            playerCam.transform.eulerAngles = new Vector3(vessel.transform.eulerAngles.x, CamAngle + vessel.transform.eulerAngles.y, 0);
+            _camAngle += Mathf.Round(Input.GetAxis("Mouse X"));
+            playerCam.transform.eulerAngles =
+                (vesselSet != 3) ?
+                new Vector3(vessel.transform.eulerAngles.x, _camAngle + vessel.transform.eulerAngles.y, 0) :
+                new Vector3(vessel.transform.eulerAngles.x, _camAngle + vessel.transform.eulerAngles.y, vessel.transform.eulerAngles.z);
         }
 
         //Rotating the AUV and Boat radars
         BoatRadar.transform.Rotate(0, 1, 0);
         AUVRadar.transform.Rotate(0, 1, 0);
-        //To keep the rotation on a single axis, the y axis in this case.
+        //To keep the rotation of the radars on a single axis, the y axis in this case.
         AUVRadar.transform.eulerAngles = new Vector3(0, AUVRadar.transform.eulerAngles.y, 0);
         BoatRadar.transform.eulerAngles = new Vector3(0, BoatRadar.transform.eulerAngles.y, 0);
 
-        if (Physics.Raycast(BoatRadar.transform.position, BoatRadar.transform.TransformDirection(Vector3.forward), out hit, ColRange, layerMask))
+        if (Physics.Raycast(BoatRadar.transform.position, BoatRadar.transform.TransformDirection(Vector3.forward), out _hit, _ColRange, layerMask))
         {
-            DrawLine(BoatRadar.transform.position, hit.point, Color.green, 0.5f);
-            UnityEngine.Object.Destroy(UnityEngine.Object.Instantiate(Sprite, hit.point, Sprite.transform.rotation), 2);
+            DrawLine(BoatRadar.transform.position, _hit.point, Color.green, 0.5f);
+            UnityEngine.Object.Destroy(UnityEngine.Object.Instantiate(Sprite, _hit.point, Sprite.transform.rotation), 2);
             int t = 31;
-            if (hit.transform.gameObject.layer != t && t2 > 5)
+            //Updating when the raday picks up on an object every 5 seconds
+            if (_timer2 > 5 && _hit.transform.gameObject.layer != t)
             {
-                DistanceSpeedInfo(hit.collider.gameObject);
-                t2 = 0;
+                DistanceSpeedInfo(_hit.collider.gameObject);
+                _timer2 = 0;
             }
 
-            Debug.DrawRay(BoatRadar.transform.position, BoatRadar.transform.TransformDirection(Vector3.forward)*ColRange, Color.gray, 0.1f, false);
+            Debug.DrawRay(BoatRadar.transform.position, BoatRadar.transform.TransformDirection(Vector3.forward)*_ColRange, Color.gray, 0.1f, false);
         }
         
-        if (Keyboard.current.digit1Key.wasPressedThisFrame)
-            camSet = 1;
+        if (Keyboard.current.digit1Key.wasPressedThisFrame) camSet = 1;
 
-        if (Keyboard.current.digit2Key.wasPressedThisFrame)
-            camSet = 2;
+        if (Keyboard.current.digit2Key.wasPressedThisFrame) camSet = 2;
     }
 
-    private void VesselSetUp(int i)
+    private void VesselSetUp()
     {
-        GameObject BoatCam = playerCam.transform.GetChild(0).gameObject;
-        GameObject AUVCam = playerCam.transform.GetChild(1).gameObject;
-        if (i == 1)
+        if (vesselSet == 1)
         {
+            //Only changing these values when the vessel we are on changes
+            if (_vesselSetTemp != vesselSet)
+            {
+                vessel = Boat.gameObject;
+                BoatPlayerControlled = true;
+                AUVPlayerControlled = false;
+                DronePlayerControlled = false;
+                Compass.GetComponent<CompassHandler>().Player = Boat.transform;
+                _BoatCam.GetComponent<Camera>().targetTexture = null;
+                _BoatCam.SetActive(true);
+                _AUVCam.SetActive(false);
+                _DroneCam.SetActive(false);
+
+                _vesselSetTemp = vesselSet;
+            }
+
             playerCam.transform.position = new Vector3(Boat.position.x, Boat.position.y + 7.36f, Boat.position.z);
-            playerCam.transform.GetChild(0).transform.localPosition = new Vector3(playerCam.transform.GetChild(0).transform.localPosition.x, playerCam.transform.GetChild(0).transform.localPosition.y, 11.5f);
-            vessel = Boat.gameObject;
-            BoatPlayerControlled = true;
-            AUVPlayerControlled = false;
-            Compass.GetComponent<CompassHandler>().Player = Boat.transform;
-            BoatCam.GetComponent<Camera>().targetTexture = null;
-            AUVCam.SetActive(false);
+            _BoatCam.transform.localPosition = new Vector3(_BoatCam.transform.localPosition.x, _BoatCam.transform.localPosition.y, 11.5f);
         }
-        else if(i == 2)
+        else if(vesselSet == 2)
         {
+            //Only changing these values when the vessel we are on changes
+            if (_vesselSetTemp != vesselSet)
+            {
+                vessel = AUV.gameObject;
+                AUVPlayerControlled = true;
+                BoatPlayerControlled = false;
+                DronePlayerControlled = false;
+                Compass.GetComponent<CompassHandler>().Player = AUV.transform;
+                _BoatCam.GetComponent<Camera>().targetTexture = AUVCamTexture;
+                _BoatCam.SetActive(true);
+                _AUVCam.SetActive(true);
+                _DroneCam.SetActive(false);
+
+                _vesselSetTemp = vesselSet;
+            }
+
             playerCam.transform.position = new Vector3(AUV.position.x, AUV.position.y + 2, AUV.position.z);
-            playerCam.transform.GetChild(0).transform.localPosition = new Vector3(playerCam.transform.GetChild(0).transform.localPosition.x, playerCam.transform.GetChild(0).transform.localPosition.y, 3.5f);
-            vessel = AUV.gameObject;
-            AUVPlayerControlled = true;
-            BoatPlayerControlled = false;
-            Compass.GetComponent<CompassHandler>().Player = AUV.transform;
-            BoatCam.GetComponent<Camera>().targetTexture = AUVCamTexture;
-            AUVCam.SetActive(true);
+            _BoatCam.transform.localPosition = new Vector3(_BoatCam.transform.localPosition.x, _BoatCam.transform.localPosition.y, 3.5f);
+        }
+        else if(vesselSet == 3)
+        {
+            //Only changing these values when the vessel we are on changes
+            if (_vesselSetTemp != vesselSet)
+            {
+                vessel = Drone.gameObject;
+                DronePlayerControlled = true;
+                BoatPlayerControlled = false;
+                AUVPlayerControlled = false;
+                Compass.GetComponent<CompassHandler>().Player = Drone.transform;
+                _BoatCam.GetComponent<Camera>().targetTexture = null;
+                _DroneCam.SetActive(true);
+                _BoatCam.SetActive(false);
+                _AUVCam.SetActive(false);
+
+                _vesselSetTemp = vesselSet;
+            }
+
+            playerCam.transform.position = new Vector3(Drone.position.x, Drone.position.y + 0.15f, Drone.position.z);
+            _DroneCam.transform.localPosition = new Vector3(_DroneCam.transform.localPosition.x, _DroneCam.transform.localPosition.y, 11.5f);
         }
     }
 
-    private void CamSetup(int i)
+    private void CamSetup()
     {
-        GameObject BoatCam = playerCam.transform.GetChild(0).gameObject;
-        GameObject AUVCam = playerCam.transform.GetChild(1).gameObject;
-        if (i == 1)
+        if (ui != _uiTemp || (camSet == 1 && _camSetTemp != camSet))
         {
-            BoatCam.SetActive(true);
-            radarCam.SetActive(uistuff);
-            PlayerCanvas.SetActive(uistuff);
-            ECDISCam.SetActive(uistuff);
+            radarCam.SetActive(ui);
+            PlayerCanvas.SetActive(ui);
+            ECDISCam.SetActive(ui);
 
-            BoatCam.GetComponent<Camera>().depth = 1;
-            AUVCam.GetComponent<Camera>().depth = 1;
+            _BoatCam.GetComponent<Camera>().depth = 1;
+            _AUVCam.GetComponent<Camera>().depth = 1;
+            _DroneCam.GetComponent<Camera>().depth = 1;
             ECDISCam.GetComponent<Camera>().depth = 2;
             radarCam.GetComponent<Camera>().depth = 2;
 
-            BoatCam.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
-            AUVCam.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+            _BoatCam.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+            _AUVCam.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
+            _DroneCam.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
             ECDISCam.GetComponent<Camera>().rect = new Rect(0.01f, 0.4f, 0.18f, 0.25f);
             radarCam.GetComponent<Camera>().rect = new Rect(0.815f, 0.01f, 0.18f, 0.53f);
 
-            BoatCam.GetComponent<AudioListener>().enabled = true;
+            playerCam.GetComponent<AudioListener>().enabled = true;
             ECDISCam.GetComponent<AudioListener>().enabled = false;
+
+            _camSetTemp = camSet;
+            _uiTemp = ui;
         }
-        else if (i == 2)
+        else if (ui != _uiTemp || (camSet == 2 && _camSetTemp != camSet))
         {
             ECDISCam.SetActive(true);
-            BoatCam.SetActive(uistuff);
-            radarCam.SetActive(uistuff);
-            PlayerCanvas.SetActive(uistuff);
+            _BoatCam.SetActive(ui);
+            radarCam.SetActive(ui);
+            PlayerCanvas.SetActive(ui);
 
             ECDISCam.GetComponent<Camera>().depth = 1;
-            AUVCam.GetComponent<Camera>().depth = 2;
-            BoatCam.GetComponent<Camera>().depth = 2;
+            _AUVCam.GetComponent<Camera>().depth = 2;
+            _BoatCam.GetComponent<Camera>().depth = 2;
+            _DroneCam.GetComponent<Camera>().depth = 2;
             radarCam.GetComponent<Camera>().depth = 2;
 
             ECDISCam.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
-            BoatCam.GetComponent<Camera>().rect = (vesselSet == 1) ? new Rect(0.01f, 0.4f, 0.18f, 0.25f) : new Rect(0, 0, 1, 1);
-            AUVCam.GetComponent<Camera>().rect = new Rect(0.01f, 0.4f, 0.18f, 0.25f);
+            _BoatCam.GetComponent<Camera>().rect = (vesselSet == 1) ? new Rect(0.01f, 0.4f, 0.18f, 0.25f) : new Rect(0, 0, 1, 1);
+            _AUVCam.GetComponent<Camera>().rect = new Rect(0.01f, 0.4f, 0.18f, 0.25f);
+            _DroneCam.GetComponent<Camera>().rect = new Rect(0.01f, 0.4f, 0.18f, 0.25f);
             radarCam.GetComponent<Camera>().rect = new Rect(0.815f, 0.01f, 0.18f, 0.53f);
 
-            BoatCam.GetComponent<AudioListener>().enabled = false;
+            playerCam.GetComponent<AudioListener>().enabled = false;
             ECDISCam.GetComponent<AudioListener>().enabled = true;
+
+            _camSetTemp = camSet;
+            _uiTemp = ui;
         }
     }
 
@@ -253,13 +319,13 @@ public class VesselManager : MonoBehaviour
         {
             o.transform.parent = obj.transform;
             o.transform.GetChild(0).GetComponent<TextMesh>().text = Math.Round(obj.GetComponent<Rigidbody>().velocity.magnitude).ToString() + " m/s";
-            o.transform.GetChild(1).GetComponent<TextMesh>().text = Math.Round(hit.distance) + " m";
+            o.transform.GetChild(1).GetComponent<TextMesh>().text = Math.Round(_hit.distance) + " m";
         }
         else if(obj.transform.parent.TryGetComponent(out Rigidbody pr))
         {
             o.transform.parent = obj.transform.parent;
             o.transform.GetChild(0).GetComponent<TextMesh>().text = Math.Round(obj.transform.parent.GetComponent<Rigidbody>().velocity.magnitude).ToString() + " m/s";
-            o.transform.GetChild(1).GetComponent<TextMesh>().text = Math.Round(hit.distance) + " m";
+            o.transform.GetChild(1).GetComponent<TextMesh>().text = Math.Round(_hit.distance) + " m";
         }
         o.transform.position = new Vector3(obj.transform.position.x, 5, obj.transform.position.z);
         o.SetActive(true);
@@ -294,7 +360,7 @@ public class VesselManager : MonoBehaviour
             float dist = Vector3.Distance(p, origin.position);
             Vector3 newDir = origin.TransformDirection(p - origin.position);
             Debug.DrawRay(origin.position, newDir, Color.red, 0.05f, false);
-            if (Physics.Raycast(origin.position, newDir, out castHit, dist, layerMask)) return true;
+            if (Physics.Raycast(origin.position, newDir, out _castHit, dist, layerMask)) return true;
         }
         return output;
     }
@@ -302,7 +368,7 @@ public class VesselManager : MonoBehaviour
     private string GetLat() {
         string output = "";
 
-        float deg = (180 * Boat.position.z) / (EarthRadius * Mathf.PI);
+        float deg = (180 * Boat.position.z) / (_EarthRadius * Mathf.PI);
         /*while (deg > 90)
             deg -= 90;*/
 
@@ -315,7 +381,7 @@ public class VesselManager : MonoBehaviour
     private string GetLong() {
         string output = "";
 
-        float deg = (180 * Boat.position.x) / (EarthRadius * Mathf.PI);
+        float deg = (180 * Boat.position.x) / (_EarthRadius * Mathf.PI);
         /*while (deg > 180)
             deg -= 180;*/
 
@@ -333,8 +399,8 @@ public class VesselManager : MonoBehaviour
         Vector3 output;
         try
         {
-            x = (float.Parse(DestLong.text) * EarthRadius * Mathf.PI) / 180;
-            z = (float.Parse(DestLat.text) * EarthRadius * Mathf.PI) / 180;
+            x = (float.Parse(DestLong.text) * _EarthRadius * Mathf.PI) / 180;
+            z = (float.Parse(DestLat.text) * _EarthRadius * Mathf.PI) / 180;
             y = Boat.position.y;
             output = new Vector3(x, y, z);
         }

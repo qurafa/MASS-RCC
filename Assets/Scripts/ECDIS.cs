@@ -36,7 +36,7 @@ public class ECDIS : MonoBehaviour
     private List<string> symbolNames = new List<string>();
     private bool camControl = false;
     private int camSet;
-    private bool uistuff = true;
+    private bool ui = true;
     private bool dState = false;
 
     // Start is called before the first frame update
@@ -56,7 +56,7 @@ public class ECDIS : MonoBehaviour
     void Update()
     {
         d.gameObject.SetActive(dState);
-        uistuff = Boat.GetComponent<VesselManager>().uistuff;
+        ui = Boat.GetComponent<VesselManager>().ui;
         Pointer.transform.position = new Vector3(Boat.position.x, 1, Boat.position.z);
         camSet = Boat.gameObject.GetComponent<VesselManager>().camSet;
         time += Time.deltaTime;
@@ -91,7 +91,7 @@ public class ECDIS : MonoBehaviour
 
         if (camSet == 2)
         {
-            ECDIScam.transform.GetChild(0).gameObject.SetActive(uistuff);//Setting the ECDIS canvas active or not depending on the Cam that we're using
+            ECDIScam.transform.GetChild(0).gameObject.SetActive(ui);//Setting the ECDIS canvas active or not depending on the Cam that we're using
 
             DLight.GetComponent<Light>().shadows = LightShadows.None;
 

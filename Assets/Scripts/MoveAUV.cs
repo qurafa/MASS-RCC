@@ -60,8 +60,7 @@ public class MoveAUV : MonoBehaviour
         //Debug.Log(points[points.Count - 2]);
         //Add the timer so it updates slower than the boat, so it's more realistic(MAYBE)
         destinationEntered = Boat.GetComponent<MoveBoat>().DestinationEntered();
-        if (vesselSet == 2)
-            Auto.isOn = auto;
+        if (vesselSet == 2) Auto.isOn = auto;
 
         //updating the boat and AUV's position in the points list
         points[0] = new KeyValuePair<Vector3, bool>(Boat.transform.position, false);
