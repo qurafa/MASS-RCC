@@ -117,10 +117,12 @@ public class ECDIS : MonoBehaviour
                 d.value = 0;
                 dPosSet = false;
             }
-            if(Boat.GetComponent<VesselManager>().vesselSet == 1)
+            if (Boat.GetComponent<VesselManager>().vesselSet == 1)
                 ECDISCamName.GetComponent<Text>().text = "BoatCam";
-            else if(Boat.GetComponent<VesselManager>().vesselSet == 2)
+            else if (Boat.GetComponent<VesselManager>().vesselSet == 2)
                 ECDISCamName.GetComponent<Text>().text = "AUVCam";
+            else if (Boat.GetComponent<VesselManager>().vesselSet == 3)
+                ECDISCamName.GetComponent<Text>().text = "DroneCam";
         }
         else
         {

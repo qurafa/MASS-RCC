@@ -34,6 +34,8 @@ public class VesselManager : MonoBehaviour
     [SerializeField]
     GameObject AUVCanvas;
     [SerializeField]
+    GameObject DroneCanvas;
+    [SerializeField]
     Text Info;
     [SerializeField]
     GameObject BoatRadar;
@@ -58,6 +60,7 @@ public class VesselManager : MonoBehaviour
     public GameObject vessel;
     public bool ui = true;
 
+    private GameObject _vesselCam;
     private int _camSetTemp = 0;
     private int _vesselSetTemp = 0;
     private bool _uiTemp = false;
@@ -65,7 +68,7 @@ public class VesselManager : MonoBehaviour
     public  static int layerMask;//the layer for all the vessles, including boat and AUV controlled by the player
 
     private static RaycastHit _castHit;
-    private bool _rCam = false; //Resetting cam rotation
+    private bool _fixCam = false; //fixing cam rotation
     private readonly float _EarthRadius = 6371000;//meters
     private float _latitude;
     private float _longitude;
@@ -96,6 +99,8 @@ public class VesselManager : MonoBehaviour
         _BoatCam = playerCam.transform.GetChild(0).gameObject;
         _AUVCam = playerCam.transform.GetChild(1).gameObject;
         _DroneCam = playerCam.transform.GetChild(2).gameObject;
+
+        _vesselCam = _BoatCam;
     }
 
     void FixedUpdate()
@@ -125,9 +130,9 @@ public class VesselManager : MonoBehaviour
             Info.text = string.Concat(GetLat(), " ", GetLong(), " \n", "Depth: ", decimal.Round(System.Convert.ToDecimal(Boat.position.y), 2), "\n", "Speed: ", decimal.Round(System.Convert.ToDecimal(GetComponent<Rigidbody>().velocity.magnitude), 1));
             DistanceFromDest.text = string.Concat("Distance From Destination:", "\n", decimal.Round(System.Convert.ToDecimal(Vector3.Distance(Boat.position, GetDestCoord())), 2)/1000, " km");
 
-            if(Keyboard.current.rKey.isPressed) _rCam = !_rCam;
+            if(Keyboard.current.rKey.isPressed) _fixCam = !_fixCam;
 
-            if (Keyboard.current.uKey.isPressed) ui = (vesselSet != 3) ? !ui : false;
+            if (Keyboard.current.uKey.isPressed) ui = !ui;
 
             if (Keyboard.current.spaceKey.isPressed)
             {
@@ -139,7 +144,7 @@ public class VesselManager : MonoBehaviour
         }
         
         //Resetting the camera view to be the front of the boat or rotating the camera based on the horizontal mouse movement or the r-key 
-        if (_vesselSetTemp != vesselSet || _rCam || camSet != 1)
+        if (_vesselSetTemp != vesselSet || _fixCam || camSet != 1)
         {
             _camAngle = 0;
             playerCam.transform.eulerAngles = new Vector3(vessel.transform.eulerAngles.x, vessel.transform.eulerAngles.y, 0);
@@ -147,10 +152,7 @@ public class VesselManager : MonoBehaviour
         else
         {
             _camAngle += Mathf.Round(Input.GetAxis("Mouse X"));
-            playerCam.transform.eulerAngles =
-                (vesselSet != 3) ?
-                new Vector3(vessel.transform.eulerAngles.x, _camAngle + vessel.transform.eulerAngles.y, 0) :
-                new Vector3(vessel.transform.eulerAngles.x, _camAngle + vessel.transform.eulerAngles.y, vessel.transform.eulerAngles.z);
+            playerCam.transform.eulerAngles = new Vector3(vessel.transform.eulerAngles.x, _camAngle + vessel.transform.eulerAngles.y, 0);
         }
 
         //Rotating the AUV and Boat radars
@@ -185,7 +187,7 @@ public class VesselManager : MonoBehaviour
         if (vesselSet == 1)
         {
             //Only changing these values when the vessel we are on changes
-            if (_vesselSetTemp != vesselSet)
+            if (ViewChange())
             {
                 vessel = Boat.gameObject;
                 BoatPlayerControlled = true;
@@ -197,6 +199,7 @@ public class VesselManager : MonoBehaviour
                 _AUVCam.SetActive(false);
                 _DroneCam.SetActive(false);
 
+                _vesselCam = _BoatCam;
                 _vesselSetTemp = vesselSet;
             }
 
@@ -206,7 +209,7 @@ public class VesselManager : MonoBehaviour
         else if(vesselSet == 2)
         {
             //Only changing these values when the vessel we are on changes
-            if (_vesselSetTemp != vesselSet)
+            if (ViewChange())
             {
                 vessel = AUV.gameObject;
                 AUVPlayerControlled = true;
@@ -218,6 +221,7 @@ public class VesselManager : MonoBehaviour
                 _AUVCam.SetActive(true);
                 _DroneCam.SetActive(false);
 
+                _vesselCam = _AUVCam;
                 _vesselSetTemp = vesselSet;
             }
 
@@ -227,7 +231,7 @@ public class VesselManager : MonoBehaviour
         else if(vesselSet == 3)
         {
             //Only changing these values when the vessel we are on changes
-            if (_vesselSetTemp != vesselSet)
+            if (ViewChange())
             {
                 vessel = Drone.gameObject;
                 DronePlayerControlled = true;
@@ -239,6 +243,7 @@ public class VesselManager : MonoBehaviour
                 _BoatCam.SetActive(false);
                 _AUVCam.SetActive(false);
 
+                _vesselCam = _DroneCam;
                 _vesselSetTemp = vesselSet;
             }
 
@@ -249,11 +254,12 @@ public class VesselManager : MonoBehaviour
 
     private void CamSetup()
     {
-        if (ui != _uiTemp || (camSet == 1 && _camSetTemp != camSet))
+        if (camSet == 1 && ViewChange())
         {
+            ECDISCam.SetActive(ui);
             radarCam.SetActive(ui);
             PlayerCanvas.SetActive(ui);
-            ECDISCam.SetActive(ui);
+            DroneCanvas.SetActive(ui);
 
             _BoatCam.GetComponent<Camera>().depth = 1;
             _AUVCam.GetComponent<Camera>().depth = 1;
@@ -264,7 +270,7 @@ public class VesselManager : MonoBehaviour
             _BoatCam.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
             _AUVCam.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
             _DroneCam.GetComponent<Camera>().rect = new Rect(0, 0, 1, 1);
-            ECDISCam.GetComponent<Camera>().rect = new Rect(0.01f, 0.4f, 0.18f, 0.25f);
+            ECDISCam.GetComponent<Camera>().rect = new Rect(0.01f, (vesselSet != 3) ? 0.4f : 0.1f, 0.18f, 0.25f);
             radarCam.GetComponent<Camera>().rect = new Rect(0.815f, 0.01f, 0.18f, 0.53f);
 
             playerCam.GetComponent<AudioListener>().enabled = true;
@@ -273,12 +279,13 @@ public class VesselManager : MonoBehaviour
             _camSetTemp = camSet;
             _uiTemp = ui;
         }
-        else if (ui != _uiTemp || (camSet == 2 && _camSetTemp != camSet))
+        else if (camSet == 2 && ViewChange())
         {
+            _vesselCam.SetActive(ui);
             ECDISCam.SetActive(true);
-            _BoatCam.SetActive(ui);
             radarCam.SetActive(ui);
             PlayerCanvas.SetActive(ui);
+            DroneCanvas.SetActive(false);
 
             ECDISCam.GetComponent<Camera>().depth = 1;
             _AUVCam.GetComponent<Camera>().depth = 2;
@@ -298,6 +305,17 @@ public class VesselManager : MonoBehaviour
             _camSetTemp = camSet;
             _uiTemp = ui;
         }
+    }
+
+    private bool ViewChange()
+    {
+        bool viewChange = false;
+
+        if (!viewChange && _camSetTemp != camSet) viewChange = true;
+        if (!viewChange && _vesselSetTemp != vesselSet) viewChange = true;
+        if (!viewChange && _uiTemp != ui) viewChange = true;
+
+        return viewChange;
     }
 
     private void SetHorizon()
