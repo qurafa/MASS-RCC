@@ -1,7 +1,8 @@
 # MASS RCC
  
  A ship simulation using the [Crest Ocean System](https://github.com/wave-harmonic/crest)
- It vessels like ship, a drone and an AUV
+ 
+ Including vessels like ship, a drone and an AUV(Autonomous Underwater Vehicle)
  
  *Controls*
  - You are able to switch vessels from the BOAT to the AUV to the Drone by holding the SPACE-BAR key.
@@ -11,13 +12,15 @@
  - The camera rotates as you move your mouse.
  - Holding the R-key fixes the camera to the forward direction of the vessel.
  - Holding the U-key removes some UI features, so you only see the player view. Doing the same again return the UI features
+ - Clicking the T-key on your keyboard after entering the destination turns on the autopilot feature for the Boat.
+ - The T-key also turns on and off the autopilot for the AUV.
 
 *Navigation*
  - You can see the ship's longitude and latitude on the top right corner of the screen.
  - You can enter a longitude and latitude you wish to navigate to in the bottom left corner of the screen
  - When you enter your destination a 'black line' appears showing you the direction to your destination
- - Clicking the T-key on your keyboard after entering the destination turns on the autopilot feature for the Boat.
  - When you are not switched to the AUV, it automatically faces and moves towards the Boat while moving back upwards towards the ocean surface.
+ - The unless you turn of the autopilot for the AUV, it should automatically hover around the Boat, or start moving towards the entered destination, if any.
  
 *ECDIS*
 - When you are in the ECDIS view, you can tap the G-key to release the lock and use the W,S,A,D keys to move the around and see the different parts of the map.
