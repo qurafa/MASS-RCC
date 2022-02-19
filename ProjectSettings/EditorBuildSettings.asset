@@ -9,9 +9,13 @@ EditorBuildSettings:
     path: Assets/Crest/Crest-Examples/Main/Scenes/main.unity
     guid: 831b08ead2995f8419a358cd5da15916
   m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 5f898d0b5b43d87448954e76fbb5c125,
+      type: 2}
     UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: 5fe3c4c2a9488544abaf6bd1b1713336,
       type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 5fe1184993f1e460f934e68a989b0762,
+      type: 2}
+    com.unity.xr.openxr.settings4: {fileID: 11400000, guid: 51b13b41090dbda4887ff999a5b40ad7,
       type: 2}
     xr.sdk.mock-hmd.settings: {fileID: 11400000, guid: b37e65064f45f4fd6823321fb70ec038,
       type: 2}
