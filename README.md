@@ -8,7 +8,7 @@
  - You are able to switch vessels from the BOAT to the AUV to the Drone by holding the SPACE-BAR key.
  - Clicking the 1 and 2 keys on your keyboard switches from the player view to the ECDIS view
  - You can move the vessels(Boat and AUV) using the W,S,A,D keys. you are also able to control the depth of the AUV using the Q and E keys.
- - To move the Drone, you make use of the arrow keys and to move forwards, backwards or sideways and use the W,S,A,D,Q,E keys to rotate and finally the R or F keys to increase or decrease altitude.
+ - To move the Drone, you make use of the arrow keys and to move forwards, backwards or sideways and use the W,S,A,D,Q,E keys to rotate and finally the Z or X keys to increase or decrease altitude.
  - The camera rotates as you move your mouse.
  - Holding the R-key fixes the camera to the forward direction of the vessel.
  - Holding the U-key removes some UI features, so you only see the player view. Doing the same again return the UI features
