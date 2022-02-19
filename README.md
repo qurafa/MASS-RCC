@@ -1,22 +1,26 @@
 # MASS RCC
  
- The only set scene is the RCC test scene , you can run the scene to see the different features.
+ A ship simulation using the [Crest Ocean System](https://github.com/wave-harmonic/crest)
  
- *General Controls*
- - You are able to switch vessels from the BOAT to the AUV by holding the SPACE-BAR key.
+ Including vessels like ship, a drone and an AUV(Autonomous Underwater Vehicle)
+ 
+ *Controls*
+ - You are able to switch vessels from the BOAT to the AUV to the Drone by holding the SPACE-BAR key.
  - Clicking the 1 and 2 keys on your keyboard switches from the player view to the ECDIS view
- - You can move the vessels(Boat and AUV) using the W,S,A,D keys.
+ - You can move the vessels(Boat and AUV) using the W,S,A,D keys. you are also able to control the depth of the AUV using the Q and E keys.
+ - To move the Drone, you make use of the arrow keys and to move forwards, backwards or sideways and use the W,S,A,D,Q,E keys to rotate and finally the Z or X keys to increase or decrease altitude.
  - The camera rotates as you move your mouse.
  - Holding the R-key fixes the camera to the forward direction of the vessel.
  - Holding the U-key removes some UI features, so you only see the player view. Doing the same again return the UI features
+ - Clicking the T-key on your keyboard after entering the destination turns on the autopilot feature for the Boat.
+ - The T-key also turns on and off the autopilot for the AUV.
 
 *Navigation*
  - You can see the ship's longitude and latitude on the top right corner of the screen.
  - You can enter a longitude and latitude you wish to navigate to in the bottom left corner of the screen
  - When you enter your destination a 'black line' appears showing you the direction to your destination
- - Clicking the T-key on your keyboard after entering the destination turns on the autopilot feature for the Boat.
- - You are able to control the depth of the AUV using the Q and E keys, to go up and down respectively.
  - When you are not switched to the AUV, it automatically faces and moves towards the Boat while moving back upwards towards the ocean surface.
+ - The unless you turn of the autopilot for the AUV, it should automatically hover around the Boat, or start moving towards the entered destination, if any.
  
 *ECDIS*
 - When you are in the ECDIS view, you can tap the G-key to release the lock and use the W,S,A,D keys to move the around and see the different parts of the map.
