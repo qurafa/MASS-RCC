@@ -1,4 +1,4 @@
-# MASS RCC
+# MASS RCC | Unity3D, C#
  
  A ship simulation, including vessels like ship, a drone and an AUV(Autonomous Underwater Vehicle)
  You have the ability to set a waypoint by indicating the longitude and latitude, where you can make use of the autopilot of manually navigate from your current position to the desired point.
