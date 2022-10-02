@@ -1,6 +1,6 @@
 # MASS RCC
  
- A ship simulation using the [Crest Ocean System](https://github.com/wave-harmonic/crest)
+ A ship simulation
  
  Including vessels like ship, a drone and an AUV(Autonomous Underwater Vehicle)
  
@@ -31,5 +31,7 @@
 - You should be able to hear different sounds, including the sound of other boats, the sound of the ocean, above and below sealevel depending on the location of the camera.
 - The proximity alert turns on when the boat is close to an object.
 - When the proximity alert turns on and the boat is on autopilot, then the boat stops(could be changed later)
+
+Made using the [Crest Ocean System](https://github.com/wave-harmonic/crest) to simulate the visuals of the water and it's physiscs
 
 Feel free to contact me if you have any more questions :)
