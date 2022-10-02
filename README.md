@@ -1,8 +1,9 @@
 # MASS RCC
  
- A ship simulation
+ A ship simulation, including vessels like ship, a drone and an AUV(Autonomous Underwater Vehicle)
+ You have the ability to set a waypoint by indicating the longitude and latitude, where you can make use of the autopilot of manually navigate from your current position to the desired point.
  
- Including vessels like ship, a drone and an AUV(Autonomous Underwater Vehicle)
+ You can view a demo here: https://youtu.be/rJusdYxs_WE
  
  *Controls*
  - You are able to switch vessels from the BOAT to the AUV to the Drone by holding the SPACE-BAR key.
