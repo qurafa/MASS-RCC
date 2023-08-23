@@ -7,6 +7,10 @@
 
 ![image](https://github.com/qurafa/MASS-RCC/assets/57468292/f7ac790a-c4ca-417a-a002-88a31c3df06b)
 
+![image](https://github.com/qurafa/MASS-RCC/assets/57468292/47296748-9902-4db1-b2da-b524e0501439)
+
+![image](https://github.com/qurafa/MASS-RCC/assets/57468292/51dbcb6f-1151-4b73-abcf-5d313e7e584d)
+
  
  *Controls*
  - You are able to switch vessels from the BOAT to the AUV to the Drone by holding the SPACE-BAR key.
