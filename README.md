@@ -4,6 +4,9 @@
  You have the ability to set a waypoint by indicating the longitude and latitude, where you can make use of the autopilot of manually navigate from your current position to the desired point.
  
  You can view a demo here: https://youtu.be/rJusdYxs_WE
+
+![image](https://github.com/qurafa/MASS-RCC/assets/57468292/f7ac790a-c4ca-417a-a002-88a31c3df06b)
+
  
  *Controls*
  - You are able to switch vessels from the BOAT to the AUV to the Drone by holding the SPACE-BAR key.
